@@ -1,0 +1,70 @@
+#!/bin/bash
+
+#prob to move to config file sometime
+stage='_alpha_'
+vers="${stage}0.3"
+
+soext=''
+
+platform=$(uname -s) # we get which platform we are on (Window[cyg/min], Apple, GUN/Linux)
+
+if [[ $platform == *"NT"* ]]; then # alright we're some form of cygwin or mingw
+    soext='.dll'
+
+elif [[ $platform == "Linux" ]]; then #Linux, ok
+    soext='.so'
+
+elif [[ $platform == "Darwin" ]]; then # Apple environment
+    # does apple really even have dynamic libs?
+    soext='.dylib' #???
+fi
+
+cd ./include/monolib/
+shopt -s nullglob
+folders=(*/)
+shopt -u nullglob
+echo "${array[@]}"
+cd ../../
+
+echo Compiling...
+
+if [ ! -d ./bin/ ]; then
+    mkdir ./bin/
+fi
+
+if [ ! -d ./lib/ ]; then
+    mkdir ./lib/
+fi
+
+for i in "${!folders[@]}"; do
+	g++ -std=gnu++11 -m64 -fPIC -c -Wall ./include/monolib/"${folders[i]}"/*.cpp
+done
+
+if [ "-$1" = '-shared' ]; then
+	echo 'building shared lib (dll)'
+	g++ -m64 -shared -g3 -o monolib"${vers}${soext}" *.o #dll creation
+	if [ ! -d "./bin/" ]; then
+		mkdir ./bin/
+	fi
+	mv monolib"${vers}${soext}" ./bin/
+	
+elif [ "$1" = '-static' ]; then
+	echo 'building static lib'
+	ar rs libmonolib"${vers}".a *.o #static lib creation
+	if [ ! -d "./lib/" ]; then
+		mkdir ./lib/
+	fi
+	mv libmonolib"${vers}".a ./lib/
+	rm *.o #minor clean up	
+	
+else
+	echo 'WARNING: no option specified; both a static library and a dynamic will be created'
+	g++ -m64 -shared -g3 -o monolib-shared"${vers}${soext}" *.o
+	ar rsc libmonolib"${vers}".a *.o
+	mv libmonolib"${vers}".a ./lib/
+	mv monolib-shared"${vers}${soext}" ./bin/
+	rm *.o
+fi
+
+echo "Done"
+
