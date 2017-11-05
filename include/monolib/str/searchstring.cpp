@@ -1,4 +1,4 @@
-#include "seachstring.h"
+#include "searchstring.h"
 
 std::vector<std::string> strToStrings(std::string str, std::string split) {
 	std::vector<std::string> out;
