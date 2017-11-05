@@ -2,7 +2,7 @@
 
 #prob to move to config file sometime
 stage='_alpha_'
-vers="${stage}0.3"
+vers="${stage}0.4"
 
 soext=''
 

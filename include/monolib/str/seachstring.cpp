@@ -1,20 +1,18 @@
 #include "seachstring.h"
-/*
-std::vector<Token> strToTokens(std::string str, std::string split) {
-
-	return out;
-}*/
 
 std::vector<std::string> strToStrings(std::string str, std::string split) {
-	//size_t alloc = std::count(str.begin(), str.end(), split);
 	std::vector<std::string> out;
-	//out.reserve(alloc);
-	std::string bStr = str; // as to not break anything
-	size_t pos = 0;
-	while((pos = bStr.find(split)) != std::string::npos) {
-		out.push_back(bStr.substr(0, pos));
-		bStr.erase(0, pos+split.length());
-	}
-	
+	size_t last = 0;
+    size_t next = 0;
+
+    while((next = str.find(split, last)) != std::string::npos) {
+        out.push_back(str.substr(last, next-last));
+        last = next + 1;
+    }
+    
+    out.push_back(str.substr(last));
+
 	return out;
 }
+
+
